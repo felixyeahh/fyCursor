@@ -1,6 +1,5 @@
-.. raw:: html
-<html>
-    <head>
+.. raw:: html 
+<embed> 
     <style>
         @charset "UTF-8";
         
@@ -532,9 +531,9 @@
             margin-top: 20px;
           }
         }</style>
-    </head>
+
     
-    <body>
+   
         <a href="https://codepen.io/uiswarup/full/yLzypyY" target="_blank">
         <header class="top-header">
         </header>
@@ -576,5 +575,4 @@
     </section>
   
     </a>
-    </body>
-</html>
+</embed>
