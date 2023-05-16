@@ -1,47 +1,28 @@
 import logging
+import sqlite3
 
-from sqlite3 import (
-    Cursor as _cur, 
-    Connection, 
-    ProgrammingError, 
-    connect as _connect
-)
-from typing import Union, Any, Type
+from typing import Union, Any, Type, Optional
 
 def connect(
     database: str, 
-    timeout: float = ..., 
-    detect_types: int = ..., 
-    isolation_level: str | None = ..., 
-    check_same_thread: bool = ..., 
-    factory: Type[Connection] | None = ..., 
-    cached_statements: int = ..., 
-    uri: bool = ...
 ) -> 'fyCursor':
 
-    connection = _connect(
+    connection = sqlite3.connect(
         database=database, 
-        timeout=timeout, 
-        detect_types=detect_types,
-        isolation_level=isolation_level, 
-        check_same_thread=check_same_thread,
-        factory=factory,
-        cached_statements=cached_statements, 
-        uri=uri
     )
     return connection.cursor(fyCursor) #type: ignore
     
 
-class fyCursor(_cur):
+class fyCursor(sqlite3.Cursor):
     """
     Custom `sqlite3.Cursor` that can be used without string query. \n
-    I just hate query because it does not have any highlighting, yeah.
+    I just hate query because it does not have any highlighting in IDE, yeah.
 
     https://github.com/felixyeahh/fyCursor
     """
     def __init__(
         self, 
-        __cursor: Connection, 
+        __cursor: sqlite3.Connection, 
         logger = None
     ) -> None:
         """
@@ -77,7 +58,7 @@ class fyCursor(_cur):
         or something similar before this statement
         """
         if not self._query:
-            raise ProgrammingError("You should use something before `add`")
+            raise sqlite3.ProgrammingError("You should use something before `add`")
         column = list(kwargs.keys())[0]
         value = list(kwargs.values())[0]
         self._query += f" SET {column} = {column} + {value}"
@@ -94,7 +75,7 @@ class fyCursor(_cur):
         or something similar before this statement
         """
         if not self._query:
-            raise ProgrammingError("You should use something before `set`")
+            raise sqlite3.ProgrammingError("You should use something before `set`")
 
         column = list(kwargs.keys())[0]
         value = str(list(kwargs.values())[0])
@@ -124,7 +105,7 @@ class fyCursor(_cur):
 
     def where(self, **kwargs) -> 'fyCursor':
         if not self._query:
-            raise ProgrammingError("You should use something before `where`")
+            raise sqlite3.ProgrammingError("You should use something before `where`")
         self._query += f" WHERE {list(kwargs.keys())[0]} = \"{list(kwargs.values())[0]}\""
         return self
 
@@ -136,7 +117,7 @@ class fyCursor(_cur):
         :param one - if `True` provided, the `cursor.fetchone()` function will be used
         """
         if not self._query:
-            raise ProgrammingError("Nothing to fetch")
+            raise sqlite3.ProgrammingError("Nothing to fetch")
         super().execute(self._query)
         super().connection.commit()
         return super().fetchone() if one else super().fetchall()        

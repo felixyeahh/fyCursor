@@ -4,3 +4,4 @@ fyCursor.egg-info/
 dist/
 build/
 setup.py
+*/__pychache__
