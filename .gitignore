@@ -5,3 +5,4 @@ dist/
 build/
 setup.py
 */__pychache__
+Pipfile*
