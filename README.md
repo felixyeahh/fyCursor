@@ -2,7 +2,7 @@
 A simple cursor for managing sqlite3 databases
 
 ## Installation 
-You can simply use pip:&nbsp;
+You can simply use pip:&nbsp;  
 \$`pip3 install fyCursor`
 
 # Changelog 📄
