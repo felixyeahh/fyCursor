@@ -1,17 +1,7 @@
-import logging
 import sqlite3
+import logging
 
 from typing import Union, Any, Type, Optional
-
-def connect(
-    database: str, 
-) -> 'fyCursor':
-
-    connection = sqlite3.connect(
-        database=database, 
-    )
-    return connection.cursor(fyCursor) #type: ignore
-    
 
 class fyCursor(sqlite3.Cursor):
     """
@@ -110,7 +100,7 @@ class fyCursor(sqlite3.Cursor):
         return self
 
 
-    def fetch(self, one: bool = False) -> Union[list, tuple[Any], None]:
+    def fetch(self, one: bool = False) -> Union[tuple, list, None]:
         """
         fetch values from cursor query
         
