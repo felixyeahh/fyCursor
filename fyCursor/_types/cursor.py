@@ -2,7 +2,7 @@ import sqlite3
 import logging
 
 from typing import Union, Any, Optional
-from .table import Table
+from .._types.table import Table
 
 
 class fyCursor(sqlite3.Cursor):

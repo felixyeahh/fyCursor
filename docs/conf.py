@@ -42,7 +42,13 @@ source_suffix = ".rst"
 master_doc = "index"
 
 latex_documents = [
-    (master_doc, f"{project}.tex", f"{project} Documentation", author, "manual"),
+    (
+        master_doc,
+        f"{project}.tex",
+        f"{project} Documentation",
+        author,
+        "manual"
+    ),
 ]
 man_pages = [(master_doc, project, f"{project} Documentation", [author], 1)]
 texinfo_documents = [
