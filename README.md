@@ -6,6 +6,7 @@ You can simply use pip: &nbsp;
 \$`pip3 install fyCursor`
 
 <!-- Repobeats analytics -->
+#  Analytics 
 ![Alt](https://repobeats.axiom.co/api/embed/0dda89a6c675987fd8c7d580fc77c9a05cd58b62.svg "Repobeats analytics image")
 
 # Changelog 📄
