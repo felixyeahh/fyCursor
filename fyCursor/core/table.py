@@ -15,20 +15,21 @@ class Table():
         args_fields: Optional[list[Field]] = None,
         kwargs_fields: Optional[dict[str, Field]] = None
     ) -> None:
-        assert kwargs_fields and args_fields, (
+        assert kwargs_fields or args_fields, (
             "you should provide either args_fields or kwargs_fields"
         )
         self._table = []
         self._sql = ""
         self.name = name
         self.cursor: fyCursor = cursor
-        self._table.extend(
-            f"{value} {value_._generate_field()},"
-            for value, value_ in kwargs_fields.items()
-        )
+        if kwargs_fields is not None:
+            self._table.extend(
+                f"{value} {value_._generate_field()},"
+                for value, value_ in kwargs_fields.items()
+            )
 
-        for value, value_ in kwargs_fields.items():
-            self._sql += f"{value} {value_._generate_field()},"
+            for value, value_ in kwargs_fields.items():
+                self._sql += f"{value} {value_._generate_field()},"
         if args_fields is not None:
             self._fields = {
                 str(arg.name): arg for arg in args_fields

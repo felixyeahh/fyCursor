@@ -6,7 +6,7 @@ You can simply use pip: &nbsp;
 \$`pip3 install fyCursor`
 
 # Changelog 📄
-### 📀 v0.0.4
+### 📀 v0.1.0
 - New fyCursor methods:
     - create_table (BETA)
 - Table and Fields (‼️ BETA):

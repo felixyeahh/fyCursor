@@ -1,5 +1,4 @@
 from ..core.fields import Field
-from ..core.cursor import fyCursor
 from typing import Any
 
 
@@ -11,7 +10,7 @@ class Table():
     def __init__(
         self,
         name: str,
-        cursor: fyCursor,
+        cursor,
         args_fields: list[Field],
         kwargs_fields: dict[str, Field]
     ) -> None:

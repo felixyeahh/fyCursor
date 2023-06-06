@@ -32,7 +32,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"
