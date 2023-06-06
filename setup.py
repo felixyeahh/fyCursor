@@ -9,22 +9,15 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     LONG_DESCRIPTION = "\n" + fh.read()
-try:
-    from fyCursor import Info
-    self = Info()
-except Exception:
-    print("Cannot import class Info from fyCursor")
-    import sys
-    sys.exit(1)
 
 # Setting up
 setup(
-    name=self.__title__,
-    version=self.__version__,
-    description=self.__description__,
-    author=self.__author__,
-    author_email=self.__author_email__,
-    license=self.__license__,
+    name="fyCursor",
+    version="0.0.4",
+    description='Simple sqlite3 cursor',
+    author="felixyeahh",
+    author_email="<felixyeah@outlook.com>",
+    license="MIT",
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
