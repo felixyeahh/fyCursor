@@ -9,7 +9,7 @@ cursor = connect("database.db")
 # you can execute basic sqlite3 script if fyCursor does
 # not have its functionality yet.
 cursor.execute("""
-    CREATE TABLE myTable(
+    CREATE TABLE IF NOT EXISTS myTable(
         id INTEGER PRIMARY KEY,
         name STRING,
         money INTEGER

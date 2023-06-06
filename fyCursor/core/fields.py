@@ -20,8 +20,10 @@ class Field():
 
     def _generate_field(self) -> str:
         self._field = self.name or ''
-        self._field = " PRIMARY KEY" if self.primary_key else _pass()
-        self._field = f"DEFAULT {self.default}" if self.default else _pass()
+        self._field += " PRIMARY KEY" if self.primary_key else _pass()
+        self._field += (
+            f"DEFAULT \"{self.default}\"" if self.default else _pass()
+        )
         self._field += _pass() if self.nullable else " NOT NULL"
 
         return self._field
