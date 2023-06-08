@@ -1,5 +1,5 @@
 from .fields import Field
-from .._types.cursor import fyCursor
+from ..types.cursor import fyCursor
 from typing import Any, Optional
 
 

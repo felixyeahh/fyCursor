@@ -2,7 +2,7 @@ import sqlite3
 import logging
 
 from typing import Union, Any, Optional
-from .._types.table import Table
+from ..types.table import Table
 
 
 class fyCursor(sqlite3.Cursor):
@@ -58,7 +58,7 @@ class fyCursor(sqlite3.Cursor):
         self._query += f" SET {column} = {column} + {value}"
         return self
 
-    def set(self, **kwargs: Any) -> 'fyCursor':
+    def set(self, fix: bool = True, **kwargs: Any) -> 'fyCursor':
         """
         Use this as SQL`SET {kwargs.keys} = {kwargs.values}`
 
@@ -75,6 +75,10 @@ class fyCursor(sqlite3.Cursor):
         column = list(kwargs.keys())[0]
         value = str(list(kwargs.values())[0])
         column = column or "NULL"
+
+        if fix and not isinstance(value, int):
+            value = f"\"{value}\""
+
         self._query += f" SET {column} = {value}"
         return self
 
@@ -118,6 +122,7 @@ class fyCursor(sqlite3.Cursor):
         """
         if not self._query:
             raise sqlite3.ProgrammingError("Nothing to fetch")
+
         super().execute(self._query)
         super().connection.commit()
         return super().fetchone() if one else super().fetchall()
