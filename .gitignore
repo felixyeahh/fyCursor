@@ -3,7 +3,7 @@
 *.egg-info/
 dist/
 build/
-**/__pychache__/
+__pychache__/
 Pipfile*
 test.py
 *.db

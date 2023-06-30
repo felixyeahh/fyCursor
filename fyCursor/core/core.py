@@ -1,8 +1,82 @@
+# pyright: reportPrivateUsage=false
 import sqlite3
 import logging
 
+from .fields import Field
 from typing import Union, Any, Optional
-from ..types.table import Table
+
+
+class TableError(BaseException):
+    """Raised if something went wrong while creating a table class"""
+
+
+class Table():
+    def __init__(
+        self,
+        name: str,
+        cursor: "fyCursor",
+        args_fields: Optional[list[Field]] = None,
+        kwargs_fields: Optional[dict[str, Field]] = None
+    ) -> None:
+        assert kwargs_fields or args_fields, (
+            "you should provide either args_fields or kwargs_fields"
+        )
+        self._table: list[str] = []
+        self._sql = ""
+        self.name = name
+        self.cursor = cursor
+        if kwargs_fields is not None:
+            self._table.extend(
+                f"{value} {value_._generate_field()},"
+                for value, value_ in kwargs_fields.items()
+            )
+
+            for value, value_ in kwargs_fields.items():
+                self._sql += f"{value} {value_._generate_field()},"
+        if args_fields is not None:
+            self._fields = {
+                str(arg.name): arg for arg in args_fields
+            }
+        else:
+            return
+        for value in args_fields:
+            if not value.name:
+                del self._table
+                del self._fields
+
+                raise TableError(
+                    "You must provide name of field if you providing it as "
+                    "args to a table."
+                )
+            self._sql += value._generate_field()
+            self._table.append(value._generate_field())
+
+    def insert(self, **kwargs: Any) -> "Table":
+        names_ = list(kwargs.keys())
+        values_ = list(kwargs.values())
+
+        def generate_name(name: str):
+            return f"{name},"
+
+        names = ""
+        for item in names_:
+            names += generate_name(item)
+
+        values = ""
+        for item in values_:
+            values += generate_name(item)
+
+        self.cursor.execute(
+            f"INSERT INTO {self.name}({names[:-1]}) VALUES ({values[:-1]})"
+        )
+
+        return self
+
+    def get_values(self) -> dict[str, Field]:
+        return self._fields
+
+    def create(self, if_not_exist: bool = False) -> "Table":
+        return self.cursor.create_table(self, if_not_exist)
 
 
 class fyCursor(sqlite3.Cursor):
@@ -76,13 +150,13 @@ class fyCursor(sqlite3.Cursor):
         value = str(list(kwargs.values())[0])
         column = column or "NULL"
 
-        if fix and not isinstance(value, int):
+        if fix:
             value = f"\"{value}\""
 
         self._query += f" SET {column} = {value}"
         return self
 
-    def select(self, value, from_: Optional[str] = None) -> 'fyCursor':
+    def select(self, value: str, from_: Optional[str] = None) -> 'fyCursor':
         """
         Use this as SQL `SELECT {value} FROM {from_}`
 
@@ -96,11 +170,11 @@ class fyCursor(sqlite3.Cursor):
             self._from(from_)
         return self
 
-    def _from(self, table) -> 'fyCursor':
+    def _from(self, table: str) -> 'fyCursor':
         self._query += f" FROM {table}"
         return self
 
-    def where(self, **kwargs) -> 'fyCursor':
+    def where(self, **kwargs: Any) -> 'fyCursor':
         if not self._query:
             raise sqlite3.ProgrammingError(
                 "You should use something before `where`"
@@ -113,7 +187,7 @@ class fyCursor(sqlite3.Cursor):
 
     def fetch(
         self, one: bool = False
-    ) -> Optional[Union[tuple[Any], list[Any]]]:
+    ) -> Optional[Union[tuple[Any], list[Any]] | Any]:
         """
         fetch values from cursor query
 
@@ -122,7 +196,6 @@ class fyCursor(sqlite3.Cursor):
         """
         if not self._query:
             raise sqlite3.ProgrammingError("Nothing to fetch")
-
         super().execute(self._query)
         super().connection.commit()
         return super().fetchone() if one else super().fetchall()
@@ -152,7 +225,8 @@ class fyCursor(sqlite3.Cursor):
     ) -> "Table":
         exist = "IF NOT EXISTS" if if_not_exist else ""
         super().execute(f"""
-            CREATE TABLE {exist} {table.name}({table._sql[:-1]})
+            CREATE TABLE {exist}\
+             {table.name}({table._sql[:-1]})
         """)
 
         return table

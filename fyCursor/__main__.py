@@ -1,4 +1,4 @@
-from fyCursor import Table, Field, connect
+'''from fyCursor import Table, Field, connect
 
 cursor = connect("database.db")
 
@@ -49,3 +49,4 @@ cursor.update("myTable").set(money=349).where(id=5).commit()
 
 # add 5 to money to all users
 cursor.update("myTable").add(money=5).commit()
+'''

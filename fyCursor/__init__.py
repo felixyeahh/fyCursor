@@ -1,4 +1,5 @@
 import sqlite3 as _sq3
+import typing as _typing
 import os as _os
 from .core import (
     fyCursor,
@@ -9,7 +10,7 @@ from .core import (
 
 
 def connect(
-    database: _os.PathLike | str,
+    database: _os.PathLike[_typing.Any] | str,
 ) -> 'fyCursor':
     """
     Connect database and return cursor
@@ -32,7 +33,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"
