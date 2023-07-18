@@ -106,11 +106,29 @@ class Table():
         self.insert(**__b)
         return self
 
+    def delete(self, **kwargs: Any) -> "Table":
+        """
+            Same as `DELETE FROM {table.name} WHERE kwargs.keys=kwargs.values`
+        """
+        names_ = list(kwargs.keys())
+        values_ = list(kwargs.values())
+
+        where = str()
+        is_first = True
+        for name, value in zip(names_, values_):
+            if not is_first:
+                where += "AND"
+            where += f"{name} = \"{value}\""
+            is_first = False
+
+        self.cursor.execute(f"DELETE FROM {self.name} WHERE {where}").commit()
+        return self
+
     def __rshift__(self, __b: dict[str, Any]) -> "Table":
-        """Insert dict using right shift (>>) operator"""
+        """Delete dict using right shift (>>) operator"""
         if not isinstance(__b, dict):  # type: ignore
             raise TableError("Wrong arguments")
-        self.insert(**__b)
+        self.delete(**__b)
         return self
 
     def get_values(self) -> dict[str, Field]:

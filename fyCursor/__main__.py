@@ -1,7 +1,6 @@
-from . import connect
+from . import connect, Table, Field
 
 cursor = connect("database.db")
-'''
 
 # --------------------------------------------------------------------------------------//
 #                                   CREATING A TABLE
@@ -35,6 +34,7 @@ AnotherTable = Table(
 # Now there are two versions of creating table,
 # but they are working totally same:
 AnotherTable.create(if_not_exist=True)
+'''
 cursor.create_table(AnotherTable, if_not_exist=True)
 
 # --------------------------------------------------------------------------------------//
@@ -50,6 +50,13 @@ cursor.update("myTable").set(money=349).where(id=5).commit()
 
 # add 5 to money to all users
 cursor.update("myTable").add(money=5).commit()
-'''
 cursor.execute("INSERT INTO myTable(money) VALUES (2)").commit()
-print(cursor.execute("SELECT * FROM myTable WHERE money=2").fetch())
+
+b = AnotherTable << {
+    "money": 2
+}
+input()
+a = AnotherTable >> {
+    "money": 2
+}
+'''
