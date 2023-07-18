@@ -7,6 +7,7 @@ from .core import (
     Table,
     Field,
     TableError,
+    TableInsert,
     NULL
 )
 
@@ -64,6 +65,7 @@ __all__ = [
     "Table",
     "Field",
     "TableError",
+    "TableInsert",
     "NULL",
     "__title__",
     "__version__",
