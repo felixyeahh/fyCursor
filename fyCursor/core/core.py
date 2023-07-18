@@ -202,7 +202,7 @@ class fyCursor(sqlite3.Cursor):
         return self
 
     def _from(self, table: str) -> 'fyCursor':
-        self._query += f"FROM {table}"  # type: ignore
+        self._query += f" FROM {table}"  # type: ignore
         return self
 
     def where(self, **kwargs: Any) -> 'fyCursor':
