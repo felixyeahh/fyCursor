@@ -1,9 +1,11 @@
 # pyright: reportPrivateUsage=false
-import sqlite3
 import logging
 
+from sqlite3 import Cursor, Connection, ProgrammingError
+from sqlite3.dbapi2 import _Parameters
+
 from .fields import Field
-from typing import Union, Any, Optional
+from typing import Union, Any, Optional, Self
 
 NULL = None  # python None is same as "NULL" here
 
@@ -106,7 +108,7 @@ class Table():
         return self.cursor.create_table(self, if_not_exist)
 
 
-class fyCursor(sqlite3.Cursor):
+class fyCursor(Cursor):
     """
     Custom `sqlite3.Cursor` that can be used without string query. \n
     I just hate query because it does not have any highlighting in IDE, yeah.
@@ -115,7 +117,7 @@ class fyCursor(sqlite3.Cursor):
     """
     def __init__(
         self,
-        __cursor: sqlite3.Connection,
+        __cursor: Connection,
         logger: Any = None
     ) -> None:
         """
@@ -133,7 +135,7 @@ class fyCursor(sqlite3.Cursor):
             "fyCursor"
         ) if logger is None else logger
 
-    def update(self, table: str) -> 'fyCursor':
+    def update(self, table: str) -> Self:
         """
         Use this as SQL `UPDATE {table}` method
 
@@ -143,7 +145,7 @@ class fyCursor(sqlite3.Cursor):
         self._query = f"UPDATE {table}"
         return self
 
-    def add(self, **kwargs: Any) -> 'fyCursor':
+    def add(self, **kwargs: Any) -> Self:
         """
         Use this as SQL `SET {kwargs.keys}={kwargs.keys}+{kwargs.values}`
 
@@ -155,7 +157,7 @@ class fyCursor(sqlite3.Cursor):
         `fyCursor.update()` or something similar before this statement
         """
         if not self._query:
-            raise sqlite3.ProgrammingError(
+            raise ProgrammingError(
                 "You should use something before `add`"
             )
         column = list(kwargs.keys())[0]
@@ -163,7 +165,7 @@ class fyCursor(sqlite3.Cursor):
         self._query += f" SET {column} = {column} + {value}"
         return self
 
-    def set(self, fix: bool = True, **kwargs: Any) -> 'fyCursor':
+    def set(self, fix: bool = True, **kwargs: Any) -> Self:
         """
         Use this as SQL`SET {kwargs.keys} = {kwargs.values}`
 
@@ -173,7 +175,7 @@ class fyCursor(sqlite3.Cursor):
         `fyCursor.update()` or something similar before this statement
         """
         if not self._query:
-            raise sqlite3.ProgrammingError(
+            raise ProgrammingError(
                 "You should use something before `set`"
             )
 
@@ -187,7 +189,7 @@ class fyCursor(sqlite3.Cursor):
         self._query += f" SET {column} = {value}"
         return self
 
-    def select(self, value: str, from_: Optional[str] = None) -> 'fyCursor':
+    def select(self, value: str, from_: Optional[str] = None) -> Self:
         """
         Use this as SQL `SELECT {value} FROM {from_}`
 
@@ -201,13 +203,13 @@ class fyCursor(sqlite3.Cursor):
             self._from(from_)
         return self
 
-    def _from(self, table: str) -> 'fyCursor':
+    def _from(self, table: str) -> Self:
         self._query += f" FROM {table}"  # type: ignore
         return self
 
-    def where(self, **kwargs: Any) -> 'fyCursor':
+    def where(self, **kwargs: Any) -> Self:
         if not self._query:
-            raise sqlite3.ProgrammingError(
+            raise ProgrammingError(
                 "You should use something before `where`"
             )
         self._query += (
@@ -215,6 +217,13 @@ class fyCursor(sqlite3.Cursor):
             f"= \"{list(kwargs.values())[0]}\""
         )
         return self
+
+    def execute(self, __sql: str, __parameters: _Parameters = ...) -> Self:
+        self._query = __sql
+        if __parameters:
+            for param in __parameters:
+                self._query.replace("?", param, 1)  # type: ignore
+        return super().execute(__sql, __parameters)
 
     def fetch(
         self, one: bool = False
@@ -226,7 +235,7 @@ class fyCursor(sqlite3.Cursor):
         function will be used
         """
         if not self._query:
-            raise sqlite3.ProgrammingError("Nothing to fetch")
+            raise ProgrammingError("Nothing to fetch")
         super().execute(self._query)
         super().connection.commit()
         return super().fetchone() if one else super().fetchall()
@@ -243,7 +252,7 @@ class fyCursor(sqlite3.Cursor):
             return fetching[0]
         return fetching
 
-    def commit(self) -> 'fyCursor':
+    def commit(self) -> Self:
         if self._query:
             super().execute(self._query)
         super().connection.commit()
