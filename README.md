@@ -3,7 +3,7 @@ A simple cursor for managing sqlite3 databases
 
 ## Installation 
 You can simply use pip: &nbsp;
-\$`pip3 install fyCursor`
+\$```pip3 install fyCursor```
 
 <!-- Repobeats analytics -->
 #  Analytics 
@@ -19,11 +19,16 @@ You can simply use pip: &nbsp;
         - ``insert`` method
         - ``create`` method
         
-    - Field class
-        - Field types
+    - Field class with following components
+        - name 
+        - types
+        - primary_key
+        - default
+        - nullable
 - Type hints
+- ``fetch`` and ``one`` now support ``execute`` method
 
-### 🎎 v0.0.1 to v0.0.3
+### 🎎 v0.0.x
 - Basic fyCursor methods:
     - add
     - set
