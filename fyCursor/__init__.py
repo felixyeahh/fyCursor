@@ -36,7 +36,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.1.4.1"
+__version__ = "0.1.4.2"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"

@@ -69,7 +69,7 @@ class Table():
         values_ = list(kwargs.values())
 
         def generate_name(name: str):
-            return f"{name},"
+            return f"\"{name}\","
 
         names = ""
         for item in names_:
@@ -251,6 +251,7 @@ class fyCursor(sqlite3.Cursor):
             CREATE TABLE {exist}\
              {table.name}({table._sql[:-1]})
         """)
+        super().connection.commit()
 
         return table
 
