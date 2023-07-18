@@ -13,7 +13,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 # Setting up
 setup(
     name="fyCursor",
-    version="0.1.4.2",
+    version="0.1.5",
     description='Simple sqlite3 cursor',
     author="felixyeahh",
     author_email="<felixyeah@outlook.com>",

@@ -18,7 +18,9 @@ You can simply use pip: &nbsp;
         - TableError
         - ``insert`` method
         - ``create`` method
+        
     - Field class
+        - Field types
 - Type hints
 
 ### 🎎 v0.0.1 to v0.0.3

@@ -3,9 +3,8 @@ import sqlite3
 import logging
 
 from .fields import Field
-from typing import Union, Any, Optional, TypeVar
+from typing import Union, Any, Optional
 
-T = TypeVar("T")
 NULL = None  # python None is same as "NULL" here
 
 
@@ -82,11 +81,19 @@ class Table():
         self.cursor.execute(
             f"INSERT INTO {self.name}({names[:-1]}) VALUES ({values[:-1]})"
         )
+        self.cursor.commit()
 
         return self
 
     def __lshift__(self, __b: dict[str, Any]) -> "Table":
         """Insert dict using left shift (<<) operator"""
+        if not isinstance(__b, dict):  # type: ignore
+            raise TableError("Wrong arguments")
+        self.insert(**__b)
+        return self
+
+    def __rshift__(self, __b: dict[str, Any]) -> "Table":
+        """Insert dict using right shift (>>) operator"""
         if not isinstance(__b, dict):  # type: ignore
             raise TableError("Wrong arguments")
         self.insert(**__b)
@@ -119,6 +126,7 @@ class fyCursor(sqlite3.Cursor):
         """
         self.null = NULL
         self.NULL = self.null
+        self._query = None
 
         super().__init__(__cursor)
         self._logger = logging.getLogger(
@@ -194,7 +202,7 @@ class fyCursor(sqlite3.Cursor):
         return self
 
     def _from(self, table: str) -> 'fyCursor':
-        self._query += f" FROM {table}"
+        self._query += f"FROM {table}"  # type: ignore
         return self
 
     def where(self, **kwargs: Any) -> 'fyCursor':
@@ -270,5 +278,6 @@ class fyCursor(sqlite3.Cursor):
             INSERT INTO TABLE {insert.table.name} ({fields})
             VALUES ({values_})
         """)
+        super().connection.commit()
 
         return insert.table

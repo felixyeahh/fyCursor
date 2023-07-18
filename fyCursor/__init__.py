@@ -10,6 +10,15 @@ from .core import (
     TableInsert,
     NULL
 )
+from sql_types import (
+    DATATYPES,
+    INTEGER,
+    TEXT,
+    DATETIME,
+    VARCHAR,
+    BOOL,
+    TIMESTAMP
+)
 
 
 def connect(
@@ -36,7 +45,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.1.4.2"
+__version__ = "0.1.5"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"
@@ -67,6 +76,13 @@ __all__ = [
     "TableError",
     "TableInsert",
     "NULL",
+    "DATATYPES",
+    "INTEGER",
+    "TEXT",
+    "DATETIME",
+    "VARCHAR",
+    "BOOL",
+    "TIMESTAMP",
     "__title__",
     "__version__",
     "__author__",
