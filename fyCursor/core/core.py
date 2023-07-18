@@ -2,12 +2,24 @@
 import logging
 
 from sqlite3 import Cursor, Connection, ProgrammingError
-from sqlite3.dbapi2 import _Parameters
 
 from .fields import Field
-from typing import Union, Any, Optional, Self
+from typing import Union, Any, Optional, Self, Protocol, TypeVar, Mapping
 
-NULL = None  # python None is same as "NULL" here
+
+NULL = None
+_T_co = TypeVar("_T_co", covariant=True)
+
+
+class SupportsLenAndGetItem(Protocol[_T_co]):
+    def __len__(self) -> int: ...
+    def __getitem__(self, __k: int) -> _T_co: ...
+
+
+_Parameters = type[
+    SupportsLenAndGetItem[str | int | float | Any | None]] | type[
+        Mapping[str, str | int | float | Any | None]
+]
 
 
 class TableError(BaseException):
@@ -218,15 +230,20 @@ class fyCursor(Cursor):
         )
         return self
 
-    def execute(self, __sql: str, __parameters: _Parameters = ...) -> Self:
+    def execute(  # type: ignore
+        self,
+        __sql: str,
+        *__parameters: _Parameters
+    ) -> Self:
         self._query = __sql
         if __parameters:
-            for param in __parameters:
+            for param in __parameters:  # type: ignore
                 self._query.replace("?", param, 1)  # type: ignore
-        return super().execute(__sql, __parameters)
+        return super().execute(__sql, __parameters)  # type: ignore
 
     def fetch(
-        self, one: bool = False
+        self,
+        one: bool = False
     ) -> Optional[Union[tuple[Any], list[Any]] | Any]:
         """
         fetch values from cursor query

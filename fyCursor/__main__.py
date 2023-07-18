@@ -1,6 +1,7 @@
-'''from fyCursor import Table, Field, connect
+from . import connect
 
 cursor = connect("database.db")
+'''
 
 # --------------------------------------------------------------------------------------//
 #                                   CREATING A TABLE
@@ -50,3 +51,5 @@ cursor.update("myTable").set(money=349).where(id=5).commit()
 # add 5 to money to all users
 cursor.update("myTable").add(money=5).commit()
 '''
+cursor.execute("INSERT INTO myTable(money) VALUES (2)").commit()
+print(cursor.execute("SELECT * FROM myTable WHERE money=2").fetch())
