@@ -87,6 +87,8 @@ class Table():
 
     def __lshift__(self, __b: dict[str, Any]) -> "Table":
         """Insert dict using left shift (<<) operator"""
+        if not isinstance(__b, dict):  # type: ignore
+            raise TableError("Wrong arguments")
         self.insert(**__b)
         return self
 
