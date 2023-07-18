@@ -10,7 +10,7 @@ from .core import (
     TableInsert,
     NULL
 )
-from sql_types import (
+from .sql_types import (
     DATATYPES,
     INTEGER,
     TEXT,
@@ -45,7 +45,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.1.5"
+__version__ = "0.1.5.1"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"
