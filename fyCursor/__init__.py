@@ -1,11 +1,13 @@
 import sqlite3 as _sq3
 import typing as _typing
 import os as _os
+
 from .core import (
     fyCursor,
     Table,
     Field,
-    TableError
+    TableError,
+    NULL
 )
 
 
@@ -33,7 +35,7 @@ def connect(
 
 __title__ = "fyCursor"
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 __author__ = "felixyeahh"
 __author_email__ = "<felixyeah@outlook.com>"
@@ -62,6 +64,7 @@ __all__ = [
     "Table",
     "Field",
     "TableError",
+    "NULL",
     "__title__",
     "__version__",
     "__author__",

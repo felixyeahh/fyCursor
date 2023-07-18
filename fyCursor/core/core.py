@@ -3,11 +3,24 @@ import sqlite3
 import logging
 
 from .fields import Field
-from typing import Union, Any, Optional
+from typing import Union, Any, Optional, TypeVar
+
+T = TypeVar("T")
+NULL = None  # python None is same as "NULL" here
 
 
 class TableError(BaseException):
     """Raised if something went wrong while creating a table class"""
+
+
+class TableInsert():
+    def __init__(
+        self,
+        table: "Table",
+        *args: str
+    ) -> None:
+        self.table = table
+        self.args = args
 
 
 class Table():
@@ -72,6 +85,11 @@ class Table():
 
         return self
 
+    def __lshift__(self, __b: dict[str, Any]) -> "Table":
+        """Insert dict using left shift (<<) operator"""
+        self.insert(**__b)
+        return self
+
     def get_values(self) -> dict[str, Field]:
         return self._fields
 
@@ -97,6 +115,9 @@ class fyCursor(sqlite3.Cursor):
         :param __cursor - sqlite3 connection
         :param logger - custom logger (Optional)
         """
+        self.null = NULL
+        self.NULL = self.null
+
         super().__init__(__cursor)
         self._logger = logging.getLogger(
             "fyCursor"
@@ -230,3 +251,21 @@ class fyCursor(sqlite3.Cursor):
         """)
 
         return table
+
+    def insert_into(self, insert: "TableInsert", *values: Any) -> Table:
+        def _prepare(args: tuple[Any]) -> str:
+            values = str()
+            for arg in args:
+                values += f"{arg} ,"
+            values = values[:-1]
+            return values
+
+        fields = _prepare(insert.args)
+        values_ = _prepare(values)
+
+        super().execute(f"""
+            INSERT INTO TABLE {insert.table.name} ({fields})
+            VALUES ({values_})
+        """)
+
+        return insert.table
