@@ -159,6 +159,7 @@ class fyCursor(Cursor):
         self.null = NULL
         self.NULL = self.null
         self._query = None
+        self._execution = None
 
         super().__init__(__cursor)
         self._logger = logging.getLogger(
@@ -253,7 +254,7 @@ class fyCursor(Cursor):
         __sql: str,
         *__parameters: _Parameters
     ) -> Self:
-        self._query = __sql
+        self._execution = __sql
         if __parameters:
             for param in __parameters:  # type: ignore
                 self._query.replace("?", param, 1)  # type: ignore
@@ -269,10 +270,11 @@ class fyCursor(Cursor):
         :param one - if `True` provided, the `cursor.fetchone()`
         function will be used
         """
-        if not self._query:
+        if not self._query and not self._execution:
             raise ProgrammingError("Nothing to fetch")
-        super().execute(self._query)
+        super().execute(self._query or self._execution)  # type: ignore
         super().connection.commit()
+        self._execution = self._query = None
         return super().fetchone() if one else super().fetchall()
 
     def one(self) -> Any:
@@ -288,8 +290,12 @@ class fyCursor(Cursor):
         return fetching
 
     def commit(self) -> Self:
-        if self._query:
+        if self._execution:
+            super().execute(self._execution)
+        elif self._query:
             super().execute(self._query)
+        self._execution = self._query = None
+
         super().connection.commit()
         return self
 
