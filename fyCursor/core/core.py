@@ -4,22 +4,10 @@ import logging
 from sqlite3 import Cursor, Connection, ProgrammingError
 
 from .fields import Field
-from typing import Union, Any, Optional, Self, Protocol, TypeVar, Mapping
+from typing import Union, Any, Optional, Self
 
 
 NULL = None
-_T_co = TypeVar("_T_co", covariant=True)
-
-
-class SupportsLenAndGetItem(Protocol[_T_co]):
-    def __len__(self) -> int: ...
-    def __getitem__(self, __k: int) -> _T_co: ...
-
-
-_Parameters = type[
-    SupportsLenAndGetItem[str | int | float | Any | None]] | type[
-        Mapping[str, str | int | float | Any | None]
-]
 
 
 class TableError(BaseException):
@@ -252,13 +240,13 @@ class fyCursor(Cursor):
     def execute(  # type: ignore
         self,
         __sql: str,
-        *__parameters: _Parameters
+        *__parameters: Any
     ) -> Self:
-        self._execution = __sql
         if __parameters:
             for param in __parameters:  # type: ignore
-                self._query.replace("?", param, 1)  # type: ignore
-        return super().execute(__sql, __parameters)  # type: ignore
+                __sql = __sql.replace("?", str(param), 1)  # type: ignore
+        self._execution = __sql
+        return super().execute(__sql)  # type: ignore
 
     def fetch(
         self,
@@ -272,6 +260,7 @@ class fyCursor(Cursor):
         """
         if not self._query and not self._execution:
             raise ProgrammingError("Nothing to fetch")
+        print(self._query, self._execution)
         super().execute(self._query or self._execution)  # type: ignore
         super().connection.commit()
         self._execution = self._query = None
