@@ -323,7 +323,6 @@ class fyCursor(Cursor):
 
     def commit(self) -> Self:
         if self._execution:
-            print(self._execution)
             super().execute(self._execution)
         elif self._query:
             super().execute(self._query)
