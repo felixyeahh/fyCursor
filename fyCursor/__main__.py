@@ -52,11 +52,11 @@ cursor.update("myTable").set(money=349).where(id=5).commit()
 cursor.update("myTable").add(money=5).commit()
 cursor.execute("INSERT INTO myTable(money) VALUES (2)").commit()
 
-b = AnotherTable << {
+b = AnotherTable >> {
     "money": 2
 }
 input()
-a = AnotherTable >> {
+a = AnotherTable << {
     "money": 2
 }
 '''

@@ -82,8 +82,7 @@ class Table():
 
         self.cursor.execute(
             f"INSERT INTO {self.name}({names[:-1]}) VALUES ({values[:-1]})"
-        )
-        self.cursor.commit()
+        ).commit()
 
         return self
 
@@ -146,13 +145,46 @@ class fyCursor(Cursor):
         """
         self.null = NULL
         self.NULL = self.null
-        self._query = None
-        self._execution = None
+        # setting null constant so user will be able to easily access it
+
+        self._empty_query()  # set query to None
 
         super().__init__(__cursor)
+
         self._logger = logging.getLogger(
             "fyCursor"
         ) if logger is None else logger
+
+    def set_logger(self, logger: Any) -> Self:
+        """
+        Sets a custom logger. Logger class should have following methods: \
+            info, warning, exception
+
+        :param logger: - logger
+        :returns: - self
+        """
+        self._logger = logger
+
+        return self
+
+    def _empty_query(self) -> None:
+        self._execution = self._query = None
+
+    def check_method(self, *methods: str) -> bool:
+        """
+        Checks if provided methods are qurrently in query
+
+        :*methods: - str name of methods
+        :returns: - bool
+        """
+        if len(methods) > 1:
+            return False not in [self.check_method(method)
+                                 for method in methods]
+        elif not methods:
+            return True
+        elif self._query is None:
+            return False
+        return methods[1] in self._query
 
     def update(self, table: str) -> Self:
         """
@@ -162,6 +194,7 @@ class fyCursor(Cursor):
         :returns: - self
         """
         self._query = f"UPDATE {table}"
+
         return self
 
     def add(self, **kwargs: Any) -> Self:
@@ -237,16 +270,24 @@ class fyCursor(Cursor):
         )
         return self
 
-    def execute(  # type: ignore
+    def execute(
         self,
         __sql: str,
         *__parameters: Any
     ) -> Self:
         if __parameters:
-            for param in __parameters:  # type: ignore
-                __sql = __sql.replace("?", str(param), 1)  # type: ignore
+            for param in __parameters:
+                __sql = __sql.replace("?", str(param), 1)
         self._execution = __sql
-        return super().execute(__sql)  # type: ignore
+        return self
+
+    def exec(self, __sql: Any, __parameters: Any = ()):
+        """
+        Execute using super().execute
+
+        Use if bugs appered in fyCursor.execute
+        """
+        return super().execute(__sql, __parameters)
 
     def fetch(
         self,
@@ -260,10 +301,12 @@ class fyCursor(Cursor):
         """
         if not self._query and not self._execution:
             raise ProgrammingError("Nothing to fetch")
-        print(self._query, self._execution)
+
         super().execute(self._query or self._execution)  # type: ignore
         super().connection.commit()
-        self._execution = self._query = None
+
+        self._empty_query()
+
         return super().fetchone() if one else super().fetchall()
 
     def one(self) -> Any:
@@ -280,12 +323,14 @@ class fyCursor(Cursor):
 
     def commit(self) -> Self:
         if self._execution:
+            print(self._execution)
             super().execute(self._execution)
         elif self._query:
             super().execute(self._query)
-        self._execution = self._query = None
-
         super().connection.commit()
+
+        self._empty_query()
+
         return self
 
     def create_table(

@@ -1,5 +1,5 @@
 from typing import Optional, Any
-from ..sql_types import DATATYPES
+from ..constants.sql_types import DATATYPES
 
 
 def _pass() -> str:

@@ -8,3 +8,4 @@ Pipfile*
 test.py
 *.db
 *.pyc
+__main__.py

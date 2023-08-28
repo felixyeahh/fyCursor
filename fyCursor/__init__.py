@@ -10,7 +10,7 @@ from .core import (
     TableInsert,
     NULL
 )
-from .sql_types import (
+from .constants.sql_types import (
     DATATYPES,
     INTEGER,
     TEXT,
@@ -19,6 +19,7 @@ from .sql_types import (
     BOOL,
     TIMESTAMP
 )
+from .constants.sql_methods import METHODS
 
 
 def connect(
@@ -83,6 +84,7 @@ __all__ = [
     "VARCHAR",
     "BOOL",
     "TIMESTAMP",
+    "METHODS",
     "__title__",
     "__version__",
     "__author__",
