@@ -1,6 +1,6 @@
-# fyCursor
 # Archived {needs some refactoring and updates which I'm not interested in making}
 
+# fyCursor
 A simple cursor for managing sqlite3 databases
 
 ## Installation 
